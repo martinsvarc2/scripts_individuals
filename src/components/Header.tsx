@@ -9,12 +9,12 @@ export default function Header({
   selectedTemplate 
 }: HeaderProps) {
   const title = step === 1 
-    ? "Upload Scripts for Your Team" 
+    ? "Upload Your Scripts" 
     : selectedCategory || ""
 
   let subheadline = ""
   if (step === 1) {
-    subheadline = "Align and Train Your Team on Your Own Scripts or Proven Templates"
+    subheadline = "Align and Train Yourself with Your Own Scripts or Proven Templates"
   } else if (step === 2) {
     subheadline = "Prepare your script"
   } else if (step === 3) {
