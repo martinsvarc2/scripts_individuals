@@ -17,7 +17,7 @@ export async function GET(request: Request) {
 
   try {
     const client = await getDbClient();
-    let query = 'SELECT * FROM scripts WHERE team_id = $1';
+    let query = 'SELECT * FROM scripts2 WHERE team_id = $1';
     const params = [teamId];
 
     if (memberstackId) {
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
 
     // Check if there are any existing scripts in this category
     const { rows: existingScripts } = await client.query(
-      'SELECT COUNT(*) as count FROM scripts WHERE team_id = $1 AND category = $2',
+      'SELECT COUNT(*) as count FROM scripts2 WHERE team_id = $1 AND category = $2',
       [teamId, category]
     );
 
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
     const isPrimary = existingScripts[0].count === '0';
 
     const { rows } = await client.query(
-      `INSERT INTO scripts 
+      `INSERT INTO scripts2 
        (team_id, memberstack_id, name, content, category, last_edited, is_primary)
        VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6)
        RETURNING *`,
@@ -108,10 +108,10 @@ export async function PUT(request: Request) {
     // If making this script primary, first remove primary status from other scripts in the category
     if (isPrimary) {
       await client.query(
-        `UPDATE scripts 
+        `UPDATE scripts2 
          SET is_primary = FALSE 
          WHERE team_id = $1 
-         AND category = (SELECT category FROM scripts WHERE id = $2)
+         AND category = (SELECT category FROM scripts2 WHERE id = $2)
          AND id != $2`,
         [teamId, id]
       );
@@ -140,7 +140,7 @@ export async function PUT(request: Request) {
     }
 
     const query = `
-      UPDATE scripts 
+      UPDATE scripts2 
       SET ${updateFields.join(', ')}, last_edited = CURRENT_TIMESTAMP
       WHERE team_id = $1 AND id = $2
       RETURNING *
@@ -182,18 +182,18 @@ export async function DELETE(request: Request) {
 
     // Check if this is a primary script
     const { rows: scriptRows } = await client.query(
-      'SELECT category, is_primary FROM scripts WHERE id = $1 AND team_id = $2',
+      'SELECT category, is_primary FROM scripts2 WHERE id = $1 AND team_id = $2',
       [id, teamId]
     );
 
     if (scriptRows.length > 0 && scriptRows[0].is_primary) {
       // If deleting a primary script, make the most recent script in the same category primary
       await client.query(
-        `UPDATE scripts 
+        `UPDATE scripts2 
          SET is_primary = TRUE 
          WHERE id = (
            SELECT id 
-           FROM scripts 
+           FROM scripts2 
            WHERE team_id = $1 
            AND category = $2 
            AND id != $3 
@@ -205,7 +205,7 @@ export async function DELETE(request: Request) {
     }
 
     const { rows } = await client.query(
-      'DELETE FROM scripts WHERE id = $1 AND team_id = $2 RETURNING id',
+      'DELETE FROM scripts2 WHERE id = $1 AND team_id = $2 RETURNING id',
       [id, teamId]
     );
 
