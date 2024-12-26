@@ -43,7 +43,7 @@ export default function Header({
           <h1 className="text-[18px] md:text-[16px] sm:text-[14px] font-extrabold font-montserrat leading-tight text-[#5b06be] mb-1">
             {title.endsWith('.') ? title.slice(0, -1) : title}
           </h1>
-          <p className="text-[11px] md:text-[10px] sm:text-[9px] font-bold font-montserrat text-gray-600 leading-snug">
+          <p className="text-[14px] md:text-[14px] sm:text-[14px] font-bold font-montserrat text-gray-600 leading-snug">
             {subheadline}
           </p>
         </div>
